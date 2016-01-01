@@ -49,26 +49,38 @@ public class ScalingListViewAdapter extends BaseAdapter{
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
-		convertView = LayoutInflater.from(mActivity).inflate(R.layout.list_item, null);
-		TextView textView = (TextView) convertView.findViewById(R.id.tv);
+		ViewHolder holder = null;
+		if(convertView == null){
+			holder = new ViewHolder();
+			convertView = LayoutInflater.from(mActivity).inflate(R.layout.list_item, null);
+			holder.textView = (TextView) convertView.findViewById(R.id.tv);
+			// 动画集合
+			AnimationSet set = new AnimationSet(false);
+			// 缩放动画
+			ScaleAnimation scale = new ScaleAnimation(0.5f, 1, 0.5f, 1,
+					Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+					0.5f);
+			scale.setDuration(800);// 动画时间
+			scale.setFillAfter(true);// 保持动画状态
+			// 渐变动画
+			AlphaAnimation alpha = new AlphaAnimation(0.6f, 1);
+			alpha.setDuration(1000);// 动画时间
+			alpha.setFillAfter(true);// 保持动画状态
+			set.addAnimation(scale);
+			set.addAnimation(alpha);
+			holder.set = set;
+			convertView.setTag(holder);
+		}else{
+			holder = (ViewHolder) convertView.getTag();
+		}
 		String s = list.get(position).toString();
-		textView.setText(s);
-		// 动画集合
-		AnimationSet set = new AnimationSet(false);
-		// 缩放动画
-		ScaleAnimation scale = new ScaleAnimation(0.5f, 1, 0.5f, 1,
-				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
-				0.5f);
-		scale.setDuration(800);// 动画时间
-		scale.setFillAfter(true);// 保持动画状态
-		// 渐变动画
-		AlphaAnimation alpha = new AlphaAnimation(0.6f, 1);
-		alpha.setDuration(1000);// 动画时间
-		alpha.setFillAfter(true);// 保持动画状态
-		set.addAnimation(scale);
-		set.addAnimation(alpha);
-		convertView.startAnimation(set);
+		holder.textView.setText(s);
+		convertView.startAnimation(holder.set);
 		return convertView;
 	}
 
+	private static class ViewHolder{
+		TextView textView;
+		AnimationSet set;
+	}
 }
